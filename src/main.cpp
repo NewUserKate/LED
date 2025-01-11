@@ -19,6 +19,12 @@ LED_Control LED_7(pwm2, 8, 9, 10);
 
 LED_Control AllLEDs[7]={LED_1, LED_2, LED_3, LED_4, LED_5, LED_6, LED_7};
 
+void SetColorForAll(int brightness_of_green, int brightness_of_red, int brightness_of_blue){  //Встановити колір для всіх світлодіодів
+  for(int i = 0; i<7; i++){
+    AllLEDs[i].SetColor(brightness_of_green, brightness_of_red, brightness_of_blue);  //(яскравість зеленого, яскравість червоного, яскравість синього)
+  }
+}
+
 bool red = false;
 bool green = false;
 bool yellow = false;
@@ -51,11 +57,7 @@ bool CheckCode(){                         //CheckCode() перевіряє, чи
   return checked;
 }
 
-void SetColorForAll(int brightness_of_green, int brightness_of_red, int brightness_of_blue){  //Встановити колір для всіх світлодіодів
-  for(int i = 0; i<7; i++){
-    AllLEDs[i].SetColor(brightness_of_green, brightness_of_red, brightness_of_blue);  //(яскравість зеленого, яскравість червоного, яскравість синього)
-  }
-}
+
 
 void myDelay(int duration){               //myDelay створена, щоб під час паузи 
     for(int i = 0; i<duration; i++){      //можна було отримати новий сигнал з пульта та запустити інший режим
@@ -71,7 +73,7 @@ void myDelay(int duration){               //myDelay створена, щоб п�
 /****************************    Перший режим (Start)     *****************************/
 
 void Start(){
-
+  int randDuration = random(2000, 7000);
   SetColorForAll(2650, 4095, 0);  //Жовтий колір на всіх світлодіодах
   myDelay(3000);
 
@@ -103,6 +105,15 @@ void Start(){
     for(int j = 0; j<7; j++){
       AllLEDs[j].SetColor(0, 2867+i, 0);  
     }
+  } 
+
+  if(CheckCode()){            
+    return;
+  } 
+
+  myDelay(randDuration);
+  if(CheckCode()){            
+    return;
   } 
 
   SetColorForAll(4095, 0, 0);       //Всі світлодіоди змінюють свій колір на зелений
@@ -246,6 +257,7 @@ void setup() {
   pwm2.setPWMFreq(1000);
   Serial.begin(9600);
   IrReceiver.begin(IR_RECIEVE_PIN, ENABLE_LED_FEEDBACK);
+  randomSeed(analogRead(0));
   SetColorForAll(0, 0, 0);
 }
 
