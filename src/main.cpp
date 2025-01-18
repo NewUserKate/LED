@@ -2,6 +2,7 @@
 #include <Adafruit_PWMServoDriver.h>
 #include "LED_Control.h"
 #include <IRremote.hpp>
+#include "modes.h"
 
 const int IR_RECIEVE_PIN = 3;
 
@@ -19,11 +20,11 @@ LED_Control LED_7(pwm2, 8, 9, 10);
 
 LED_Control AllLEDs[7]={LED_1, LED_2, LED_3, LED_4, LED_5, LED_6, LED_7};
 
-void SetColorForAll(int brightness_of_green, int brightness_of_red, int brightness_of_blue){  //Встановити колір для всіх світлодіодів
-  for(int i = 0; i<7; i++){
-    AllLEDs[i].SetColor(brightness_of_green, brightness_of_red, brightness_of_blue);  //(яскравість зеленого, яскравість червоного, яскравість синього)
-  }
-}
+// void SetColorForAll(int brightness_of_green, int brightness_of_red, int brightness_of_blue){  //Встановити колір для всіх світлодіодів
+//   for(int i = 0; i<7; i++){
+//     AllLEDs[i].SetColor(brightness_of_green, brightness_of_red, brightness_of_blue);  //(яскравість зеленого, яскравість червоного, яскравість синього)
+//   }
+// }
 
 bool red = false;
 bool green = false;
@@ -43,6 +44,9 @@ const long unsigned int remoteKeys[6]={     // Масив з кодами, що 
   3158572800
 };
 
+void resumeSearch(){
+  IrReceiver.resume();
+}
 
 bool CheckCode(){                         //CheckCode() перевіряє, чи був отриманий сигнал з пульта та чи є він відомим(чи є він у масиві remoteKeys)
   bool checked = false;
@@ -69,183 +73,6 @@ void myDelay(int duration){               //myDelay створена, щоб п�
       }
       delay(1);
     } 
-}
-/****************************    Перший режим (Start)     *****************************/
-
-void Start(){
-  int randDuration = random(2000, 7000);
-  SetColorForAll(2650, 4095, 0);  //Жовтий колір на всіх світлодіодах
-  myDelay(3000);
-
-  if(CheckCode()){            
-    return;
-  }
-
-  for(int i = 0; i<6; i++){
-    AllLEDs[i].SetColor(0, 2867, 0); // Загоряються червоним на 70% по черзі з інтервалом в 1.2 секунди
-    myDelay(1200);
-    if(CheckCode()){            
-      break;
-    } 
-    IrReceiver.resume();
-  }
-
-  AllLEDs[6].SetColor(0, 2867, 0);
-  if(CheckCode()){            
-      return;
-  } 
-
-  for(int i = 0; i<1229; i+=8){   // Збільшується яскравість до 100% протягом 2 секунд
-    if(i%8 == 0){
-      if(CheckCode()){            
-        break;
-      } 
-      IrReceiver.resume();
-    }
-    for(int j = 0; j<7; j++){
-      AllLEDs[j].SetColor(0, 2867+i, 0);  
-    }
-  } 
-
-  if(CheckCode()){            
-    return;
-  } 
-
-  myDelay(randDuration);
-  if(CheckCode()){            
-    return;
-  } 
-
-  SetColorForAll(4095, 0, 0);       //Всі світлодіоди змінюють свій колір на зелений
-  myDelay(5000);
-
-  if(CheckCode()){            
-    return;
-  } 
-  for(int i = 4095; i>-1; i-=9){  //Світлодіоди повільно затухають
-    if(i%27 == 0){
-      if(CheckCode()){            
-        break;
-      } 
-      IrReceiver.resume();
-    }
-    for(int j = 0; j<7; j++){
-      AllLEDs[j].SetColor(i, 0, 0); 
-    }
-    
-  }
-  while(!CheckCode()){          //Цикл, що забезпечує виконання режиму Start лише один раз та не допускає отримання невідомих
-    SetColorForAll(0, 0, 0);    //кодів з пульта(цикл завершиться тільки після отримання коду з пульта, що є у масиві remoteKeys)
-  }
-}
-
-
-/***************************** Другий режим (traffic_light)****************************************/
-void traffic_light(){
-  while(!CheckCode()){
-    IrReceiver.resume();
-    for(int i = 0; i<4095; i+=21){    // Плавно збільшується яскравість до 100%(червоний колір)
-      if(i%21 == 0){
-        if(CheckCode()){            
-          break;
-        } 
-        IrReceiver.resume();
-      }
-      for(int j = 0; j<7; j++){
-        AllLEDs[j].SetColor(0, i, 0);  
-      }
-    } 
-    if(CheckCode()){            
-      break;
-    } 
-  for(int i = 4095; i>-1; i-=21){   // Плавно зменшується яскравість до 0%(червоний колір)
-    IrReceiver.resume();
-    if(i%21 == 0){
-      if(CheckCode()){            
-        break;
-      } 
-      IrReceiver.resume();
-    }
-    for(int j = 0; j<7; j++){
-      AllLEDs[j].SetColor(0, i, 0);  
-    }
-    if(CheckCode()){            
-      break;
-    } 
-  } 
-}
-}
-
-
-/************************* Третій, четвертий та п'ятий режими(Ввімкнути/вимкнути червоний/зелений/жовтий)********************************************/
-void OnOffRed(){
-  while(!CheckCode()){
-    IrReceiver.resume();
-    if(red == true){
-      SetColorForAll(0, 4095, 0);
-    }
-    else{
-      SetColorForAll(0, 0, 0);
-    }
-  }
-}
-
-void OnOffGreen(){
-  while(!CheckCode()){
-    IrReceiver.resume();
-    if(green == true){
-      SetColorForAll(4095, 0, 0);
-    }
-    else{
-      SetColorForAll(0, 0, 0);
-    }
-  }
-}
-
-void OnOffYellow(){
-  while(!CheckCode()){
-    IrReceiver.resume();
-    if(yellow == true){
-      SetColorForAll(2650, 4095, 0);
-    }
-    else{
-      SetColorForAll(0, 0, 0);
-    }
-  }
-}
-
-/******************************** Шостий режим (Audio)*************************************/
-void Audio(){
-  SetColorForAll(0, 0, 0);
-  while(true){  
-    LED_1.SetColor(0, 0, 0);
-    LED_7.SetColor(0, 0, 0);
-    LED_4.SetColor(2650, 4095, 0);
-    myDelay(550);                
-    if(CheckCode()){            
-      break;
-    } 
-    LED_4.SetColor(0, 0, 0);
-    LED_3.SetColor(2650, 4095, 0);
-    LED_5.SetColor(2650, 4095, 0);
-    myDelay(550);                 
-    if(CheckCode()){            
-      break;
-    } 
-    LED_3.SetColor(0, 0, 0);
-    LED_5.SetColor(0, 0, 0);
-    LED_2.SetColor(2650, 4095, 0);
-    LED_6.SetColor(2650, 4095, 0);
-    myDelay(550);              
-    if(CheckCode()){            
-      break;
-    } 
-    LED_2.SetColor(0, 0, 0);
-    LED_6.SetColor(0, 0, 0);
-    LED_1.SetColor(2650, 4095, 0);
-    LED_7.SetColor(2650, 4095, 0);
-    myDelay(550);
-  }
 }
 
 void setup() {
