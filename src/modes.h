@@ -10,7 +10,8 @@ extern bool green;
 extern bool yellow;
 extern bool CheckCode();
 extern void myDelay(int duration);
-extern void resumeSearch();
+
+extern bool newsignal;
 
 void SetColorForAll(int brightness_of_green, int brightness_of_red, int brightness_of_blue);
 
@@ -20,3 +21,4 @@ void OnOffRed();
 void OnOffGreen();
 void OnOffYellow();
 void Audio();
+void Test();
