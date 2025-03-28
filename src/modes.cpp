@@ -186,5 +186,9 @@ void Test(){
   if(newsignal){
     return;
   }
+  SetColorForAll(0, 0, 0);
   Audio();
+  if(newsignal){
+    return;
+  }
 }
