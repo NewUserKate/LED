@@ -8,8 +8,10 @@ extern LED_Control AllLEDs[];
 extern bool red;
 extern bool green;
 extern bool yellow;
-extern bool CheckCode();
+//extern bool CheckCode();
 extern void myDelay(int duration);
+// extern void acceptAndReply();
+extern bool acceptAndReply();
 
 extern bool newsignal;
 

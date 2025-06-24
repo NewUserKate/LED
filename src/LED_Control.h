@@ -10,10 +10,5 @@ private:
     int blue;
 public:
     LED_Control(Adafruit_PWMServoDriver& indicatedpwm, int portGreen, int portRed, int portBlue);
-    //Adafruit_PWMServoDriver* getPWM();
-    //int getGreen();
-    //int getRed();
-    //int getBlue();
     void SetColor(int brightness_of_green, int brightness_of_red, int brightness_of_blue);
-
 };

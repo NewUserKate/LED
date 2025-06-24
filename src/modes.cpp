@@ -28,13 +28,15 @@ for(int i = 0; i<6; i++){
 }
 
 AllLEDs[6].SetColor(0, 2867, 0);
-if(CheckCode()){            
+//if(CheckCode()){          
+if(acceptAndReply()){  
     return;
 } 
 
 for(int i = 0; i<1229; i+=8){   // Збільшується яскравість до 100% протягом 2 секунд
   if(i%8 == 0){
-    if(CheckCode()){            
+    //if(CheckCode()){   
+    if(acceptAndReply()){          
       return;
     } 
   }
@@ -56,7 +58,8 @@ if(newsignal){
 
 for(int i = 4095; i>-1; i-=9){  //Світлодіоди повільно затухають
   if(i%27 == 0){
-    if(CheckCode()){            
+    //if(CheckCode()){  
+    if(acceptAndReply()){           
       return;
     } 
   }
@@ -71,7 +74,8 @@ for(int i = 4095; i>-1; i-=9){  //Світлодіоди повільно зат
 void traffic_light(){
   for(int i = 0; i<4095; i+=21){    // Плавно збільшується яскравість до 100%(червоний колір)
     if(i%21 == 0){
-      if(CheckCode()){            
+      //if(CheckCode()){       
+      if(acceptAndReply()){      
         return;
       } 
     }
@@ -79,26 +83,30 @@ void traffic_light(){
       AllLEDs[j].SetColor(0, i, 0);  
     }
   } 
-  if(CheckCode()){            
+  //if(CheckCode()){            
+  if(acceptAndReply()){ 
     return;
   } 
 for(int i = 4095; i>-1; i-=21){   // Плавно зменшується яскравість до 0%(червоний колір)
   if(i%21 == 0){
-    if(CheckCode()){            
+    //if(CheckCode()){     
+    if(acceptAndReply()){        
       return;
     } 
   }
   for(int j = 0; j<7; j++){
     AllLEDs[j].SetColor(0, i, 0);  
   }
-  if(CheckCode()){            
+  //if(CheckCode()){            
+  if(acceptAndReply()){ 
     return;
   } 
 } 
 }
 // /************************* Третій, четвертий та п'ятий режими(Ввімкнути/вимкнути червоний/зелений/жовтий)********************************************/
 void OnOffRed(){
-  while(!CheckCode()){
+  //while(!CheckCode()){
+  while(!acceptAndReply()){ 
     if(red == true){
       SetColorForAll(0, 4095, 0);
     }
@@ -109,7 +117,8 @@ void OnOffRed(){
 }
 
 void OnOffGreen(){
-  while(!CheckCode()){
+  //while(!CheckCode()){
+  while(!acceptAndReply()){ 
     if(green == true){
       SetColorForAll(4095, 0, 0);
     }
@@ -120,7 +129,8 @@ void OnOffGreen(){
 }
 
 void OnOffYellow(){
-  while(!CheckCode()){
+  //while(!CheckCode()){
+  while(!acceptAndReply()){ 
     if(yellow == true){
       SetColorForAll(2650, 4095, 0);
     }
